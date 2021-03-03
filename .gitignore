@@ -23,5 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # User-specific stuff
+.idea/
 .idea/vcs.xml
+.idea/workspace.xml
+
+.eslintcache
 

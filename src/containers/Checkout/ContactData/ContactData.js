@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import * as actions from '../../../store/actions/index';
 
@@ -10,9 +10,8 @@ import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/WidthErrorHandler/WidthErrorHandler';
 import {checkValidity} from "../../../shared/utility";
 
-class ContactData extends React.Component {
-    state = {
-        orderForm: {
+const ContactData = (props) => {
+    const [orderForm, setOrderForm] = useState( {
             name: {
                 elementType: 'input',
                 elementConfig: {
@@ -93,34 +92,34 @@ class ContactData extends React.Component {
                 valid: true,
                 touched: false
             },
-        },
-        formIsValid: false,
-    }
+        })
 
-    orderHandler = (event) => {
+    const [formIsValid, setFormIsValid] = useState(false)
+
+    const orderHandler = (event) => {
         event.preventDefault();
 
         const formData = {};
 
-        for (let formElementIdentifier in this.state.orderForm) {
-            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+        for (let formElementIdentifier in orderForm) {
+            formData[formElementIdentifier] = orderForm[formElementIdentifier].value;
         }
 
         const order = {
-            ingredients: this.props.ings,
-            price: this.props.price,
+            ingredients: props.ings,
+            price: props.price,
             orderData: formData,
-            userId: this.props.userId
+            userId: props.userId
         }
 
-        this.props.onOrderBurger(order, this.props.token);
+        props.onOrderBurger(order, props.token);
 
     }
 
-    inputChangedHandler = (event, inputIdentifier) => {
+    const inputChangedHandler = (event, inputIdentifier) => {
 
         const updatedOrderForm = {
-            ...this.state.orderForm
+            ...orderForm
         };
 
         const updateFormElement = {
@@ -138,48 +137,47 @@ class ContactData extends React.Component {
             formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
         }
 
-        this.setState({orderForm: updatedOrderForm, formIsValid:formIsValid })
+        setOrderForm(updatedOrderForm);
+        setFormIsValid(formIsValid)
     }
 
-    render() {
 
-        const formElementsArray = [];
+    const formElementsArray = [];
 
-        for (let key in this.state.orderForm) {
-            formElementsArray.push({
-                id: key,
-                config: this.state.orderForm[key]
-            })
-        }
-
-        let form = (<form onSubmit={this.orderHandler}>
-            {formElementsArray.map(formElement => {
-                return (
-                    <Input
-                        key={formElement.id}
-                        elementType={formElement.config.elementType}
-                        elementConfig={formElement.config.elementConfig}
-                        value={formElement.config.value}
-                        invalid={!formElement.config.valid}
-                        shouldValidate={formElement.config.validation}
-                        touched = {formElement.config.touched}
-                        changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
-                )
-            })}
-            <Button btnType="Success" disabled={!this.state.formIsValid}>Order</Button>
-        </form>);
-
-        if (this.props.loading) {
-            form = <Spinner/>
-        }
-
-        return (
-            <div className={styles.ContactData}>
-                <h4>Enter your Contact Data</h4>
-                {form}
-            </div>
-        )
+    for (let key in orderForm) {
+        formElementsArray.push({
+            id: key,
+            config: orderForm[key]
+        })
     }
+
+    let form = (<form onSubmit={orderHandler}>
+        {formElementsArray.map(formElement => {
+            return (
+                <Input
+                    key={formElement.id}
+                    elementType={formElement.config.elementType}
+                    elementConfig={formElement.config.elementConfig}
+                    value={formElement.config.value}
+                    invalid={!formElement.config.valid}
+                    shouldValidate={formElement.config.validation}
+                    touched={formElement.config.touched}
+                    changed={(event) => inputChangedHandler(event, formElement.id)}/>
+            )
+        })}
+        <Button btnType="Success" disabled={!formIsValid}>Order</Button>
+    </form>);
+
+    if (props.loading) {
+        form = <Spinner/>
+    }
+
+    return (
+        <div className={styles.ContactData}>
+            <h4>Enter your Contact Data</h4>
+            {form}
+        </div>
+    )
 
 }
 

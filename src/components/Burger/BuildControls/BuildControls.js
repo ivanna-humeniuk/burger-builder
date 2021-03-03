@@ -11,7 +11,7 @@ const controls = [
 ]
 
 
-const BuildControls = (props) => {
+const buildControls = (props) => {
     return (
         <div className={styles.BuildControls}>
             <p>Current Price: <strong>{props.price.toFixed(2)}</strong></p>
@@ -34,4 +34,4 @@ const BuildControls = (props) => {
 }
 
 
-export default BuildControls
+export default buildControls
